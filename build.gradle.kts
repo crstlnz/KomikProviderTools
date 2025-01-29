@@ -69,7 +69,7 @@ publishing {
                     username = "crstlnz"
                     password = token
                 }
-                setUrl("https://maven.pkg.github.com/crstlnz/komikchino")
+                setUrl("https://github.com/crstlnz/KomikProviderTools")
             }
         }
     }
