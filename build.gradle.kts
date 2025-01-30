@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "2.0.0"
+    kotlin("jvm") version "2.1.0"
     id("java-gradle-plugin")
     id("maven-publish")
 }
@@ -10,8 +10,8 @@ plugins {
 group = "com.crstlnz.komikchino"
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 tasks.withType<KotlinCompile> {
@@ -25,7 +25,7 @@ tasks.withType<KotlinCompile> {
             )
         )
 
-        jvmTarget.set(JvmTarget.JVM_11)  // Required
+        jvmTarget.set(JvmTarget.JVM_21)  // Required
     }
 }
 
