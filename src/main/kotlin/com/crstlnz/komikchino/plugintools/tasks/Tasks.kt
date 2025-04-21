@@ -45,7 +45,7 @@ fun registerTasks(project: Project) {
             it.input.from(kotlinTask.destinationDirectory)
         }
 
-        // This task does not seem to be required for a successful cs3 file
+        // This task does not seem to be required for a successful kc file
 
 //        val javacTask = project.tasks.findByName("compileDebugJavaWithJavac") as AbstractCompile?
 //        if (javacTask != null) {
@@ -112,7 +112,7 @@ fun registerTasks(project: Project) {
             }
             zip.isPreserveFileTimestamps = false
             zip.archiveBaseName.set(project.name)
-            zip.archiveExtension.set("cs3")
+            zip.archiveExtension.set("kc")
             zip.archiveVersion.set("")
             zip.destinationDirectory.set(project.buildDir)
 
