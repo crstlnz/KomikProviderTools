@@ -18,6 +18,7 @@ import java.lang.Thread
 abstract class MakePluginsJsonTask : DefaultTask() {
     @get:OutputFile
     abstract val outputFile: RegularFileProperty
+    @get:OutputFile
     abstract val repoOutputFile: RegularFileProperty
 
     @TaskAction
