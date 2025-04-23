@@ -11,7 +11,6 @@ data class PluginEntry(
     val fileSize: Long?,
     val repositoryUrl: String?,
     val language: String?,
-    val tvTypes: List<String>?,
     val iconUrl: String?,
     val apiVersion: Int
 )

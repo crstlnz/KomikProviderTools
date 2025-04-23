@@ -3,6 +3,7 @@ package com.crstlnz.komikchino.plugintools.tasks
 import com.crstlnz.komikchino.plugintools.findKomik
 import com.crstlnz.komikchino.plugintools.makePluginEntry
 import com.crstlnz.komikchino.plugintools.entities.PluginEntry
+import com.crstlnz.komikchino.plugintools.findProvider
 import groovy.json.JsonBuilder
 import groovy.json.JsonGenerator
 import org.gradle.api.DefaultTask
@@ -15,10 +16,22 @@ import java.lang.Thread
 abstract class MakePluginsJsonTask : DefaultTask() {
     @get:OutputFile
     abstract val outputFile: RegularFileProperty
+    abstract val repoOutputFile: RegularFileProperty
 
     @TaskAction
     fun makePluginsJson() {
         val lst = LinkedList<PluginEntry>()
+        val providerInfo = extensions.findProvider()
+        if(providerInfo != null) {
+            repoOutputFile.asFile.get().writeText(
+                JsonBuilder(
+                    providerInfo,
+                    JsonGenerator.Options()
+                        .excludeNulls()
+                        .build()
+                ).toPrettyString()
+            )
+        }
 
         for (subproject in project.allprojects) {
             subproject.extensions.findKomik() ?: continue

@@ -45,7 +45,6 @@ fun Project.makePluginEntry(): PluginEntry {
         language = extension.language,
         iconUrl = extension.iconUrl,
         apiVersion = extension.apiVersion,
-        tvTypes = extension.tvTypes,
         fileSize = extension.fileSize
     )
 }

@@ -2,7 +2,15 @@ package com.crstlnz.komikchino.plugintools
 
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionContainer
+import org.gradle.internal.impldep.com.fasterxml.jackson.annotation.JsonProperty
 import javax.inject.Inject
+
+abstract class ProviderInfo @Inject constructor(project: Project) {
+    @JsonProperty("name") val name: String = ""
+    @JsonProperty("description") val description: String = ""
+    @JsonProperty("manifestVersion") val manifestVersion: Int = 1
+    @JsonProperty("pluginLists") val pluginLists: List<String> = listOf()
+}
 
 abstract class KomikExtension @Inject constructor(project: Project) {
     val userCache = project.gradle.gradleUserHomeDir.resolve("caches").resolve("komik")
@@ -86,7 +94,6 @@ abstract class KomikExtension @Inject constructor(project: Project) {
     var authors = listOf<String>()
     var status = 3
     var language: String? = null
-    var tvTypes: List<String>? = null
     var iconUrl: String? = null
 }
 
@@ -112,3 +119,12 @@ fun ExtensionContainer.getKomik(): KomikExtension {
 fun ExtensionContainer.findKomik(): KomikExtension? {
     return findByName("komik") as KomikExtension?
 }
+
+fun ExtensionContainer.getProvider(): ProviderInfo {
+    return getByName("komik") as ProviderInfo
+}
+
+fun ExtensionContainer.findProvider(): ProviderInfo? {
+    return findByName("komik") as ProviderInfo?
+}
+
