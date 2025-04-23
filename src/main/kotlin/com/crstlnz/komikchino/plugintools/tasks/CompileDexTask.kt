@@ -85,7 +85,7 @@ abstract class CompileDexTask : DefaultTask() {
                         reader.accept(classNode, 0)
 
                         for (annotation in classNode.visibleAnnotations.orEmpty() + classNode.invisibleAnnotations.orEmpty()) {
-                            if (annotation.desc == "Lcom/crstlnz/komikchino/plugintools/KomikPlugin;") {
+                            if (annotation.desc == "Lcom/crstlnz/komikchino/plugins/KomikPlugin;") {
                                 val komik = project.extensions.getKomik()
 
                                 require(komik.pluginClassName == null) {

@@ -1,9 +1,7 @@
 package com.crstlnz.komikchino.plugintools
 
 import org.gradle.api.Project
-import com.crstlnz.komikchino.plugintools.getKomik
 import com.crstlnz.komikchino.plugintools.entities.*
-import groovy.json.JsonBuilder
 
 fun Project.makeManifest(): PluginManifest {
     val extension = this.extensions.getKomik()
