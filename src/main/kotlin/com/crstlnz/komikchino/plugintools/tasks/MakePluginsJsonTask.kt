@@ -1,9 +1,11 @@
 package com.crstlnz.komikchino.plugintools.tasks
 
+import com.crstlnz.komikchino.plugintools.KomikExtension
 import com.crstlnz.komikchino.plugintools.findKomik
 import com.crstlnz.komikchino.plugintools.makePluginEntry
 import com.crstlnz.komikchino.plugintools.entities.PluginEntry
 import com.crstlnz.komikchino.plugintools.findProvider
+import com.crstlnz.komikchino.plugintools.getKomik
 import groovy.json.JsonBuilder
 import groovy.json.JsonGenerator
 import org.gradle.api.DefaultTask
@@ -20,21 +22,12 @@ abstract class MakePluginsJsonTask : DefaultTask() {
 
     @TaskAction
     fun makePluginsJson() {
-        val lst = LinkedList<PluginEntry>()
-        val providerInfo = extensions.findProvider()
-        if(providerInfo != null) {
-            repoOutputFile.asFile.get().writeText(
-                JsonBuilder(
-                    providerInfo,
-                    JsonGenerator.Options()
-                        .excludeNulls()
-                        .build()
-                ).toPrettyString()
-            )
-        }
+        val lst = LinkedList<PluginEntry>();
+        var komik: KomikExtension? = null
 
         for (subproject in project.allprojects) {
             subproject.extensions.findKomik() ?: continue
+            komik = subproject.extensions.getKomik()
 
             lst.add(subproject.makePluginEntry())
         }
@@ -49,5 +42,21 @@ abstract class MakePluginsJsonTask : DefaultTask() {
         )
 
         logger.lifecycle("Created ${outputFile.asFile.get()}")
+
+        // create repo.json file
+        val providerInfo = extensions.findProvider()
+        if(providerInfo != null && komik != null) {
+            providerInfo.pluginLists = listOf(
+                komik.repository!!.getRawLink(repoOutputFile.get().asFile.name, komik.buildBranch)
+            )
+            repoOutputFile.asFile.get().writeText(
+                JsonBuilder(
+                    providerInfo,
+                    JsonGenerator.Options()
+                        .excludeNulls()
+                        .build()
+                ).toPrettyString()
+            )
+        }
     }
 }

@@ -9,7 +9,8 @@ abstract class ProviderInfo @Inject constructor(project: Project) {
     @JsonProperty("name") val name: String = ""
     @JsonProperty("description") val description: String = ""
     @JsonProperty("manifestVersion") val manifestVersion: Int = 1
-    @JsonProperty("pluginLists") val pluginLists: List<String> = listOf()
+    @JsonProperty("pluginLists")
+    var pluginLists: List<String> = listOf()
 }
 
 abstract class KomikExtension @Inject constructor(project: Project) {
