@@ -18,6 +18,7 @@ import java.lang.Thread
 abstract class MakePluginsJsonTask : DefaultTask() {
     @get:OutputFile
     abstract val outputFile: RegularFileProperty
+
     @get:OutputFile
     abstract val repoOutputFile: RegularFileProperty
 
@@ -46,18 +47,32 @@ abstract class MakePluginsJsonTask : DefaultTask() {
 
         // create repo.json file
         val providerInfo = extensions.findProvider()
-        if(providerInfo != null && komik != null) {
-            providerInfo.pluginLists = listOf(
-                komik.repository!!.getRawLink(repoOutputFile.get().asFile.name, komik.buildBranch)
-            )
-            repoOutputFile.asFile.get().writeText(
-                JsonBuilder(
-                    providerInfo,
-                    JsonGenerator.Options()
-                        .excludeNulls()
-                        .build()
-                ).toPrettyString()
-            )
+        if (providerInfo == null && komik == null) {
+            logger.lifecycle("Provider info not provided!")
+        }
+
+        if (providerInfo != null && komik != null) {
+            logger.lifecycle("Creating repo.json")
+            try {
+                providerInfo.pluginLists = listOf(
+                    komik.repository!!.getRawLink(
+                        repoOutputFile.get().asFile.name,
+                        komik.buildBranch
+                    )
+                )
+                repoOutputFile.asFile.get().writeText(
+                    JsonBuilder(
+                        providerInfo,
+                        JsonGenerator.Options()
+                            .excludeNulls()
+                            .build()
+                    ).toPrettyString()
+                )
+                logger.lifecycle("Created ${repoOutputFile.asFile.get()}")
+            } catch (e: Exception) {
+                logger.error(e.stackTraceToString())
+                logger.lifecycle("Failed to create repo.json")
+            }
         }
     }
 }
