@@ -46,7 +46,7 @@ abstract class MakePluginsJsonTask : DefaultTask() {
         logger.lifecycle("Created ${outputFile.asFile.get()}")
 
         // create repo.json file
-        val providerInfo = extensions.findProvider()
+        val providerInfo = project.extensions.findProvider()
         if (providerInfo == null) {
             logger.lifecycle("Provider info not provided!")
         }
