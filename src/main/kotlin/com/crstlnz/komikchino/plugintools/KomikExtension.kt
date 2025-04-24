@@ -1,8 +1,8 @@
 package com.crstlnz.komikchino.plugintools
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionContainer
-import org.gradle.internal.impldep.com.fasterxml.jackson.annotation.JsonProperty
 import javax.inject.Inject
 
 open class ProviderInfo {
