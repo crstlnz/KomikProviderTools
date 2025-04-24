@@ -12,6 +12,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
+import org.gradle.internal.impldep.com.fasterxml.jackson.databind.ObjectMapper
 import java.util.LinkedList
 import java.lang.Thread
 
@@ -66,14 +67,14 @@ abstract class MakePluginsJsonTask : DefaultTask() {
 
                 providerInfo.pluginLists = listOf(link)
 
+                val mapper = ObjectMapper().apply {
+                    enable(org.gradle.internal.impldep.com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT)
+                }
+
                 repoOutputFile.asFile.get().writeText(
-                    JsonBuilder(
-                        providerInfo,
-                        JsonGenerator.Options()
-                            .excludeNulls()
-                            .build()
-                    ).toPrettyString()
+                    mapper.writeValueAsString(providerInfo)
                 )
+
                 logger.lifecycle("Created ${repoOutputFile.asFile.get()}")
             } catch (e: Throwable) {
                 logger.error(e.stackTraceToString())
