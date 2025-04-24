@@ -56,6 +56,11 @@ gradlePlugin {
             id = "com.crstlnz.komikchino.plugintools"
             implementationClass = "com.crstlnz.komikchino.plugintools.KomikPlugin"
         }
+
+        create("com.crstlnz.komikchino.providerInfo") {
+            id = "com.crstlnz.komikchino.providerInfo"
+            implementationClass = "com.crstlnz.komikchino.plugintools.ProviderInfoPlugin"
+        }
     }
 }
 
