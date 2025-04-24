@@ -5,10 +5,16 @@ import org.gradle.api.plugins.ExtensionContainer
 import org.gradle.internal.impldep.com.fasterxml.jackson.annotation.JsonProperty
 import javax.inject.Inject
 
-abstract class ProviderInfo @Inject constructor(project: Project) {
-    @JsonProperty("name") var name: String = ""
-    @JsonProperty("description") var description: String = ""
-    @JsonProperty("manifestVersion") var manifestVersion: Int = 1
+open class ProviderInfo {
+    @JsonProperty("name")
+    var name: String = ""
+
+    @JsonProperty("description")
+    var description: String = ""
+
+    @JsonProperty("manifestVersion")
+    var manifestVersion: Int = 1
+
     @JsonProperty("pluginLists")
     var pluginLists: List<String> = listOf()
 }
@@ -36,48 +42,84 @@ abstract class KomikExtension @Inject constructor(project: Project) {
     fun setRepo(user: String, repo: String, url: String, rawLinkFormat: String) {
         repository = Repo(user, repo, url, rawLinkFormat)
     }
+
     fun setRepo(user: String, repo: String, type: String) {
         when {
-            type == "github" -> setRepo(user, repo, "https://github.com/${user}/${repo}", "https://raw.githubusercontent.com/${user}/${repo}/%branch%/%filename%")
-            type == "gitlab" -> setRepo(user, repo, "https://gitlab.com/${user}/${repo}", "https://gitlab.com/${user}/${repo}/-/raw/%branch%/%filename%")
-            type == "codeberg" -> setRepo(user, repo, "https://codeberg.org/${user}/${repo}", "https://codeberg.org/${user}/${repo}/raw/branch/%branch%/%filename%")
+            type == "github" -> setRepo(
+                user,
+                repo,
+                "https://github.com/${user}/${repo}",
+                "https://raw.githubusercontent.com/${user}/${repo}/%branch%/%filename%"
+            )
+
+            type == "gitlab" -> setRepo(
+                user,
+                repo,
+                "https://gitlab.com/${user}/${repo}",
+                "https://gitlab.com/${user}/${repo}/-/raw/%branch%/%filename%"
+            )
+
+            type == "codeberg" -> setRepo(
+                user,
+                repo,
+                "https://codeberg.org/${user}/${repo}",
+                "https://codeberg.org/${user}/${repo}/raw/branch/%branch%/%filename%"
+            )
+
             type.startsWith("gitlab-") -> {
                 val domain = type.removePrefix("gitlab-")
-                setRepo(user, repo, "https://${domain}/${user}/${repo}", "https://${domain}/${user}/${repo}/-/raw/%branch%/%filename%")
+                setRepo(
+                    user,
+                    repo,
+                    "https://${domain}/${user}/${repo}",
+                    "https://${domain}/${user}/${repo}/-/raw/%branch%/%filename%"
+                )
             }
+
             type.startsWith("gitea-") -> {
                 val domain = type.removePrefix("gitea-")
-                setRepo(user, repo, "https://${domain}/${user}/${repo}", "https://${domain}/${user}/${repo}/raw/branch/%branch%/%filename%")
+                setRepo(
+                    user,
+                    repo,
+                    "https://${domain}/${user}/${repo}",
+                    "https://${domain}/${user}/${repo}/raw/branch/%branch%/%filename%"
+                )
             }
+
             else -> throw IllegalArgumentException("Unknown type ${type}. Use github, gitlab, gitlab-<domain> or gitea-<domain> or set repository via setRepo(user, repo, url, rawLinkFormat)")
         }
     }
+
     fun setRepo(url: String) {
         var type: String? = null
 
         var split = when {
-             url.startsWith("https://github.com") -> {
+            url.startsWith("https://github.com") -> {
                 type = "github"
-                   url
+                url
                     .removePrefix("https://")
                     .removePrefix("github.com")
             }
+
             url.startsWith("https://gitlab.com") -> {
                 type = "gitlab"
                 url
                     .removePrefix("https://")
                     .removePrefix("gitlab.com")
             }
+
             url.startsWith("https://codeberg.org") -> {
                 type = "codeberg"
                 url
                     .removePrefix("https://")
                     .removePrefix("codeberg.org")
             }
+
             !url.startsWith("https://") -> { // assume default as github
                 type = "github"
                 url
             }
+
             else -> throw IllegalArgumentException("Unknown domain, please set repository via setRepo(user, repo, type)")
         }
             .removePrefix("/")
