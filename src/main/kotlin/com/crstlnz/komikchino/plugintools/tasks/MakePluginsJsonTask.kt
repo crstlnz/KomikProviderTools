@@ -57,12 +57,15 @@ abstract class MakePluginsJsonTask : DefaultTask() {
         if (providerInfo != null && komik != null) {
             logger.lifecycle("Creating repo.json")
             try {
-                providerInfo.pluginLists = listOf(
-                    komik.repository!!.getRawLink(
-                        repoOutputFile.get().asFile.name,
-                        komik.buildBranch
-                    )
+                val link = komik.repository!!.getRawLink(
+                    repoOutputFile.get().asFile.name,
+                    komik.buildBranch
                 )
+
+                logger.lifecycle("Raw link : $link")
+
+                providerInfo.pluginLists = listOf(link)
+                
                 repoOutputFile.asFile.get().writeText(
                     JsonBuilder(
                         providerInfo,
@@ -72,7 +75,7 @@ abstract class MakePluginsJsonTask : DefaultTask() {
                     ).toPrettyString()
                 )
                 logger.lifecycle("Created ${repoOutputFile.asFile.get()}")
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 logger.error(e.stackTraceToString())
                 logger.lifecycle("Failed to create repo.json")
             }
