@@ -58,7 +58,7 @@ abstract class MakePluginsJsonTask : DefaultTask() {
             logger.lifecycle("Creating repo.json")
             try {
                 val link = komik.repository!!.getRawLink(
-                    repoOutputFile.get().asFile.name,
+                    outputFile.get().asFile.name,
                     komik.buildBranch
                 )
 
