@@ -6,13 +6,13 @@ import com.crstlnz.komikchino.plugintools.makePluginEntry
 import com.crstlnz.komikchino.plugintools.entities.PluginEntry
 import com.crstlnz.komikchino.plugintools.findProvider
 import com.crstlnz.komikchino.plugintools.getKomik
+import com.fasterxml.jackson.databind.ObjectMapper
 import groovy.json.JsonBuilder
 import groovy.json.JsonGenerator
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
-import org.gradle.internal.impldep.com.fasterxml.jackson.databind.ObjectMapper
 import java.util.LinkedList
 import java.lang.Thread
 
@@ -68,7 +68,7 @@ abstract class MakePluginsJsonTask : DefaultTask() {
                 providerInfo.pluginLists = listOf(link)
 
                 val mapper = ObjectMapper().apply {
-                    enable(org.gradle.internal.impldep.com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT)
+                    enable(com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT)
                 }
 
                 repoOutputFile.asFile.get().writeText(
