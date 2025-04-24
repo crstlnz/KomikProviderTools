@@ -164,10 +164,10 @@ fun ExtensionContainer.findKomik(): KomikExtension? {
 }
 
 fun ExtensionContainer.getProvider(): ProviderInfo {
-    return getByName("komik") as ProviderInfo
+    return getByName("providerInfo") as ProviderInfo
 }
 
 fun ExtensionContainer.findProvider(): ProviderInfo? {
-    return findByName("komik") as ProviderInfo?
+    return findByName("providerInfo") as ProviderInfo?
 }
 

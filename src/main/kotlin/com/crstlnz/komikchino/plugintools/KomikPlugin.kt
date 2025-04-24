@@ -8,7 +8,7 @@ import com.crstlnz.komikchino.plugintools.configuration.registerConfigurations
 abstract class KomikPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         project.extensions.create("komik", KomikExtension::class.java, project)
-        project.extensions.create("providerinfo", ProviderInfo::class.java)
+        project.extensions.create("providerInfo", ProviderInfo::class.java)
 
         registerTasks(project)
         registerConfigurations(project)
