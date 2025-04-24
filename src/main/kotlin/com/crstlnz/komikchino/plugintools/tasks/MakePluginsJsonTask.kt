@@ -48,7 +48,7 @@ abstract class MakePluginsJsonTask : DefaultTask() {
         // create repo.json file
         val providerInfo = project.extensions.findProvider()
         if (providerInfo == null) {
-            logger.lifecycle("Provider info not provided!")
+            logger.lifecycle("provider info not provided!")
         }
         if (komik == null) {
             logger.lifecycle("komik not provided!")
