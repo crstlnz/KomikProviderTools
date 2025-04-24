@@ -6,7 +6,7 @@ import com.crstlnz.komikchino.plugintools.makePluginEntry
 import com.crstlnz.komikchino.plugintools.entities.PluginEntry
 import com.crstlnz.komikchino.plugintools.findProvider
 import com.crstlnz.komikchino.plugintools.getKomik
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.crstlnz.komikchino.plugintools.makeRepoJson
 import groovy.json.JsonBuilder
 import groovy.json.JsonGenerator
 import org.gradle.api.DefaultTask
@@ -14,7 +14,6 @@ import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import java.util.LinkedList
-import java.lang.Thread
 
 abstract class MakePluginsJsonTask : DefaultTask() {
     @get:OutputFile
@@ -63,18 +62,18 @@ abstract class MakePluginsJsonTask : DefaultTask() {
                     komik.buildBranch
                 )
 
+                val providerInfoData = project.makeRepoJson(project.extensions)
+                providerInfoData.pluginLists = listOf(link)
                 logger.lifecycle("Raw link : $link")
 
-                providerInfo.pluginLists = listOf(link)
-
-                val mapper = ObjectMapper().apply {
-                    enable(com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT)
-                }
-
                 repoOutputFile.asFile.get().writeText(
-                    mapper.writeValueAsString(providerInfo)
+                    JsonBuilder(
+                        providerInfoData,
+                        JsonGenerator.Options()
+                            .excludeNulls()
+                            .build()
+                    ).toPrettyString()
                 )
-
                 logger.lifecycle("Created ${repoOutputFile.asFile.get()}")
             } catch (e: Throwable) {
                 logger.error(e.stackTraceToString())

@@ -1,23 +1,22 @@
 package com.crstlnz.komikchino.plugintools
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionContainer
 import javax.inject.Inject
 
 open class ProviderInfo {
-    @JsonProperty("name")
     var name: String = ""
-
-    @JsonProperty("description")
     var description: String = ""
-
-    @JsonProperty("manifestVersion")
     var manifestVersion: Int = 1
-
-    @JsonProperty("pluginLists")
     var pluginLists: List<String> = listOf()
 }
+
+data class ProviderInfoData(
+    var name: String = "",
+    var description: String = "",
+    var manifestVersion: Int = 1,
+    var pluginLists: List<String> = listOf()
+)
 
 abstract class KomikExtension @Inject constructor(project: Project) {
     val userCache = project.gradle.gradleUserHomeDir.resolve("caches").resolve("komik")

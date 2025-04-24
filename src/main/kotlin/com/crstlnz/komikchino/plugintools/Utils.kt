@@ -2,6 +2,7 @@ package com.crstlnz.komikchino.plugintools
 
 import org.gradle.api.Project
 import com.crstlnz.komikchino.plugintools.entities.*
+import org.gradle.api.plugins.ExtensionContainer
 
 fun Project.makeManifest(): PluginManifest {
     val extension = this.extensions.getKomik()
@@ -47,4 +48,15 @@ fun Project.makePluginEntry(): PluginEntry {
         apiVersion = extension.apiVersion,
         fileSize = extension.fileSize
     )
+}
+
+fun Project.makeRepoJson(extension : ExtensionContainer): ProviderInfoData {
+    val providerInfo = extension.getProvider()
+
+   return ProviderInfoData(
+       name = providerInfo.name,
+       description = providerInfo.description,
+       manifestVersion = providerInfo.manifestVersion,
+       pluginLists = providerInfo.pluginLists
+   )
 }

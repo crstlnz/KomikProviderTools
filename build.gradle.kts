@@ -45,9 +45,6 @@ dependencies {
     compileOnly("com.android.tools.build:gradle:8.7.3")
     compileOnly("org.jetbrains.kotlin:kotlin-gradle-plugin:2.0.0")
 
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2")
-
     implementation("org.ow2.asm:asm:9.4")
     implementation("org.ow2.asm:asm-tree:9.4")
     implementation("com.github.vidstige:jadb:master-SNAPSHOT")
