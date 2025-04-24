@@ -6,16 +6,9 @@ import org.gradle.internal.impldep.com.fasterxml.jackson.annotation.JsonProperty
 import javax.inject.Inject
 
 open class ProviderInfo {
-    @JsonProperty("name")
     var name: String = ""
-
-    @JsonProperty("description")
     var description: String = ""
-
-    @JsonProperty("manifestVersion")
     var manifestVersion: Int = 1
-
-    @JsonProperty("pluginLists")
     var pluginLists: List<String> = listOf()
 }
 

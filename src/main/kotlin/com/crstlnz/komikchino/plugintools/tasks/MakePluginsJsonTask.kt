@@ -65,7 +65,7 @@ abstract class MakePluginsJsonTask : DefaultTask() {
                 logger.lifecycle("Raw link : $link")
 
                 providerInfo.pluginLists = listOf(link)
-                
+
                 repoOutputFile.asFile.get().writeText(
                     JsonBuilder(
                         providerInfo,
