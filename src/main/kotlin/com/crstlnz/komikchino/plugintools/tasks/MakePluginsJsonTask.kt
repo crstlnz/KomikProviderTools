@@ -47,8 +47,8 @@ abstract class MakePluginsJsonTask : DefaultTask() {
 
         // create repo.json file
         val providerInfo = extensions.findProvider()
-        if (providerInfo == null && komik == null) {
-            logger.lifecycle("Provider info not provided!")
+        if (providerInfo == null || komik == null) {
+            logger.lifecycle("Provider info or komik not provided!")
         }
 
         if (providerInfo != null && komik != null) {
