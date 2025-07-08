@@ -5,6 +5,7 @@ import org.gradle.api.plugins.ExtensionContainer
 import javax.inject.Inject
 
 open class ProviderInfo {
+    var id: String = ""
     var name: String = ""
     var description: String = ""
     var manifestVersion: Int = 1
@@ -30,6 +31,8 @@ abstract class KomikExtension @Inject constructor(project: Project) {
         internal set
 
     var buildBranch: String = "builds"
+
+    var repoId: String = ""
 
     fun overrideUrlPrefix(url: String) {
         if (apkinfo == null) {
