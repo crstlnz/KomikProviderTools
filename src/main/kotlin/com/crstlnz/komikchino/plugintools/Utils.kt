@@ -24,9 +24,8 @@ fun Project.makeManifest(): PluginManifest {
     )
 }
 
-fun Project.makePluginEntry(): PluginEntry {
+fun Project.makePluginEntry(provider: ProviderInfo? = null): PluginEntry {
     val extension = this.extensions.getKomik()
-    val provider = this.extensions.getProvider()
 
     val version = this.version.toString().toIntOrNull(10)
     if (version == null) {

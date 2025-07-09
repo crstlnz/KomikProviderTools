@@ -26,11 +26,12 @@ abstract class MakePluginsJsonTask : DefaultTask() {
     fun makePluginsJson() {
         val lst = LinkedList<PluginEntry>();
         var komik: KomikExtension? = null
+        val providerInfo = project.extensions.findProvider()
 
         for (subproject in project.allprojects) {
             subproject.extensions.findKomik() ?: continue
             komik = subproject.extensions.getKomik()
-            lst.add(subproject.makePluginEntry())
+            lst.add(subproject.makePluginEntry(providerInfo))
         }
 
         outputFile.asFile.get().writeText(
@@ -45,7 +46,6 @@ abstract class MakePluginsJsonTask : DefaultTask() {
         logger.lifecycle("Created ${outputFile.asFile.get()}")
 
         // create repo.json file
-        val providerInfo = project.extensions.findProvider()
         if (providerInfo == null) {
             logger.lifecycle("provider info not provided!")
         }
