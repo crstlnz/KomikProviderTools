@@ -24,7 +24,7 @@ fun Project.makeManifest(): PluginManifest {
     )
 }
 
-fun Project.makePluginEntry(provider: ProviderInfo? = null): PluginEntry {
+fun Project.makePluginEntry(provider: ProviderInfo?): PluginEntry {
     val extension = this.extensions.getKomik()
 
     val version = this.version.toString().toIntOrNull(10)
@@ -35,7 +35,7 @@ fun Project.makePluginEntry(provider: ProviderInfo? = null): PluginEntry {
     val repo = extension.repository
 
     return PluginEntry(
-        url = repo?.getRawLink("${this.name}.kc", extension.buildBranch) ?: "",
+        url = (repo?.getRawLink("${this.name}.kc", extension.buildBranch) ?: ""),
         status = extension.status,
         version = version ?: -1,
         name = this.name,
