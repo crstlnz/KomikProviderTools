@@ -24,7 +24,7 @@ fun Project.makeManifest(): PluginManifest {
     )
 }
 
-fun Project.makePluginEntry(provider: ProviderInfo?): PluginEntry {
+fun Project.makePluginEntry(): PluginEntry {
     val extension = this.extensions.getKomik()
 
     val version = this.version.toString().toIntOrNull(10)
@@ -35,29 +35,28 @@ fun Project.makePluginEntry(provider: ProviderInfo?): PluginEntry {
     val repo = extension.repository
 
     return PluginEntry(
-        url = (repo?.getRawLink("${this.name}.kc", extension.buildBranch) ?: ""),
+        url = (if (repo == null) "" else repo.getRawLink("${this.name}.kc", extension.buildBranch)),
         status = extension.status,
         version = version ?: -1,
         name = this.name,
         internalName = this.name,
         authors = extension.authors,
         description = extension.description,
-        repositoryUrl = (repo?.url),
+        repositoryUrl = (if (repo == null) null else repo.url),
         language = extension.language,
         iconUrl = extension.iconUrl,
         apiVersion = extension.apiVersion,
-        fileSize = extension.fileSize,
-        repoId = provider?.id ?: "",
+        fileSize = extension.fileSize
     )
 }
 
-fun Project.makeRepoJson(extension: ExtensionContainer): ProviderInfoData {
+fun Project.makeRepoJson(extension : ExtensionContainer): ProviderInfoData {
     val providerInfo = extension.getProvider()
 
-    return ProviderInfoData(
-        name = providerInfo.name,
-        description = providerInfo.description,
-        manifestVersion = providerInfo.manifestVersion,
-        pluginLists = providerInfo.pluginLists
-    )
+   return ProviderInfoData(
+       name = providerInfo.name,
+       description = providerInfo.description,
+       manifestVersion = providerInfo.manifestVersion,
+       pluginLists = providerInfo.pluginLists
+   )
 }
