@@ -55,6 +55,7 @@ fun Project.makeRepoJson(extension: ExtensionContainer): ProviderInfoData {
     val providerInfo = extension.getProvider()
 
     return ProviderInfoData(
+        id = providerInfo.name,
         name = providerInfo.name,
         description = providerInfo.description,
         manifestVersion = providerInfo.manifestVersion,
