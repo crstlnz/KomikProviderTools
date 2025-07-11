@@ -35,6 +35,8 @@ abstract class KomikExtension @Inject constructor(project: Project) {
 
     var repoId: String = ""
 
+    var nsfw: Boolean? = false
+
     fun overrideUrlPrefix(url: String) {
         if (apkinfo == null) {
             apkinfo = ApkInfo(this, "pre-release")

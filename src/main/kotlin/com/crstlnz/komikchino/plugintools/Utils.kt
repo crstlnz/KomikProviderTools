@@ -48,6 +48,7 @@ fun Project.makePluginEntry(provider: ProviderInfo?): PluginEntry {
         apiVersion = extension.apiVersion,
         fileSize = extension.fileSize,
         repoId = provider?.id ?: "",
+        nsfw = extension.nsfw ?: false,
     )
 }
 

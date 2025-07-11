@@ -13,5 +13,6 @@ data class PluginEntry(
     val language: String?,
     val iconUrl: String?,
     val apiVersion: Int,
-    val repoId: String
+    val repoId: String,
+    val nsfw: Boolean?
 )
