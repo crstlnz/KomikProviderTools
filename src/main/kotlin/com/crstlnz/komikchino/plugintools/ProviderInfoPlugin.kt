@@ -2,7 +2,6 @@ package com.crstlnz.komikchino.plugintools
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import com.crstlnz.komikchino.plugintools.tasks.registerTasks
 import com.crstlnz.komikchino.plugintools.configuration.registerConfigurations
 
 abstract class ProviderInfoPlugin : Plugin<Project> {

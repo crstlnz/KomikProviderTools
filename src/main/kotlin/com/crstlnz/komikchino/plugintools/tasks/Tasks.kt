@@ -2,7 +2,7 @@ package com.crstlnz.komikchino.plugintools.tasks
 
 import com.crstlnz.komikchino.plugintools.getKomik
 import com.crstlnz.komikchino.plugintools.makeManifest
-import com.android.build.gradle.BaseExtension
+import com.android.build.api.dsl.LibraryExtension
 import com.android.build.gradle.tasks.ProcessLibraryManifest
 import groovy.json.JsonBuilder
 import groovy.json.JsonGenerator
@@ -57,30 +57,36 @@ fun registerTasks(project: Project) {
         it.outputFile.set(intermediates.resolve("classes.dex"))
     }
 
-    val compileResources = project.tasks.register("compileResources", CompileResourcesTask::class.java) {
-        it.group = TASK_GROUP
+    val compileResources =
+        project.tasks.register("compileResources", CompileResourcesTask::class.java) {
+            it.group = TASK_GROUP
 
-        val processManifestTask = project.tasks.getByName("processDebugManifest") as ProcessLibraryManifest
-        it.dependsOn(processManifestTask)
+            val processManifestTask =
+                project.tasks.getByName("processDebugManifest") as ProcessLibraryManifest
+            it.dependsOn(processManifestTask)
 
-        val android = project.extensions.getByName("android") as BaseExtension
-        it.input.set(android.sourceSets.getByName("main").res.srcDirs.single())
-        it.manifestFile.set(processManifestTask.manifestOutputFile)
+            val android = project.extensions.getByType(LibraryExtension::class.java)
+            it.input.set(
+                project.file(
+                    android.sourceSets.getByName("main").res.directories.single()
+                )
+            )
+            it.manifestFile.set(processManifestTask.manifestOutputFile)
 
-        it.outputFile.set(intermediates.resolve("res.apk"))
+            it.outputFile.set(intermediates.resolve("res.apk"))
 
-        it.doLast { _ ->
-            val resApkFile = it.outputFile.asFile.get()
+            it.doLast { _ ->
+                val resApkFile = it.outputFile.asFile.get()
 
-            if (resApkFile.exists()) {
-                project.tasks.named("make", AbstractCopyTask::class.java) {
-                    it.from(project.zipTree(resApkFile)) { copySpec ->
-                        copySpec.exclude("AndroidManifest.xml")
+                if (resApkFile.exists()) {
+                    project.tasks.named("make", AbstractCopyTask::class.java) {
+                        it.from(project.zipTree(resApkFile)) { copySpec ->
+                            copySpec.exclude("AndroidManifest.xml")
+                        }
                     }
                 }
             }
         }
-    }
 
     project.afterEvaluate {
         val make = project.tasks.register("make", Zip::class.java) {
@@ -97,10 +103,11 @@ fun registerTasks(project: Project) {
                 }
 
                 manifestFile.writeText(
-                    JsonBuilder(project.makeManifest(),
+                    JsonBuilder(
+                        project.makeManifest(),
                         JsonGenerator.Options()
-                        .excludeNulls()
-                        .build()
+                            .excludeNulls()
+                            .build()
                     ).toString()
                 )
             }
