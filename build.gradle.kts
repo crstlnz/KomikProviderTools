@@ -42,7 +42,7 @@ dependencies {
 
     compileOnly("com.google.guava:guava:30.1.1-jre")
     compileOnly("com.android.tools:sdk-common:30.0.0")
-    compileOnly("com.android.tools.build:gradle:9.0.1")
+    compileOnly("com.android.tools.build:gradle:9.3.1")
     compileOnly("org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.10")
 
     implementation("org.ow2.asm:asm:9.4")
