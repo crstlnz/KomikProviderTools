@@ -16,7 +16,10 @@ const val TASK_GROUP = "komik"
 
 fun registerTasks(project: Project) {
     val extension = project.extensions.getKomik()
-    val intermediates = project.buildDir.resolve("intermediates")
+    val intermediates = project.layout.buildDirectory
+        .dir("intermediates")
+        .get()
+        .asFile
 
     if (project.rootProject.tasks.findByName("makePluginsJson") == null) {
         project.rootProject.tasks.register("makePluginsJson", MakePluginsJsonTask::class.java) {
@@ -24,8 +27,8 @@ fun registerTasks(project: Project) {
 
             it.outputs.upToDateWhen { false }
 
-            it.outputFile.set(it.project.buildDir.resolve("plugins.json"))
-            it.repoOutputFile.set(it.project.buildDir.resolve("repo.json"))
+            it.outputFile.set(it.project.layout.buildDirectory.file("plugins.json"))
+            it.repoOutputFile.set(it.project.layout.buildDirectory.file("repo.json"))
         }
     }
 
@@ -122,7 +125,7 @@ fun registerTasks(project: Project) {
             zip.archiveBaseName.set(project.name)
             zip.archiveExtension.set("kc")
             zip.archiveVersion.set("")
-            zip.destinationDirectory.set(project.buildDir)
+            zip.destinationDirectory.set(project.layout.buildDirectory)
 
             it.doLast { task ->
                 extension.fileSize = task.outputs.files.singleFile.length()
