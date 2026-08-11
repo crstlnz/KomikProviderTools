@@ -27,7 +27,6 @@ fun registerTasks(project: Project) {
             MakePluginsJsonTask::class.java
         ) {
             it.group = TASK_GROUP
-
             it.outputs.upToDateWhen { false }
 
             it.outputFile.set(
@@ -44,172 +43,172 @@ fun registerTasks(project: Project) {
         it.group = TASK_GROUP
     }
 
-    val pluginClassFile = intermediates.resolve("pluginClass")
+    project.pluginManager.withPlugin("com.android.library") {
+        val android = project.extensions.getByType(
+            LibraryExtension::class.java
+        )
 
-    val android = project.extensions.getByType(
-        LibraryExtension::class.java
-    )
+        val pluginClassFile = intermediates.resolve("pluginClass")
 
-    val compileDex =
-        project.tasks.register(
-            "compileDex",
-            CompileDexTask::class.java
-        ) {
-            it.group = TASK_GROUP
-
-            it.pluginClassFile.set(pluginClassFile)
-
-            it.minSdk.set(
-                android.defaultConfig.minSdk
-                    ?: error(
-                        "minSdk is not configured for ${project.path}"
-                    )
-            )
-
-            val kotlinTask =
-                project.tasks.findByName("compileDebugKotlin")
-                        as KotlinCompile?
-
-            if (kotlinTask != null) {
-                it.dependsOn(kotlinTask)
-                it.input.from(kotlinTask.destinationDirectory)
-            }
-
-            it.outputFile.set(
-                intermediates.resolve("classes.dex")
-            )
-        }
-
-    val compileResources =
-        project.tasks.register(
-            "compileResources",
-            CompileResourcesTask::class.java
-        ) {
-            it.group = TASK_GROUP
-
-            val processManifestTask =
-                project.tasks.getByName(
-                    "processDebugManifest"
-                ) as ProcessLibraryManifest
-
-            it.dependsOn(processManifestTask)
-
-            it.input.set(
-                project.file(
-                    android.sourceSets
-                        .getByName("main")
-                        .res.directories
-                        .single()
-                )
-            )
-
-            it.manifestFile.set(
-                processManifestTask.manifestOutputFile
-            )
-
-            it.outputFile.set(
-                intermediates.resolve("res.apk")
-            )
-
-            it.doLast { _ ->
-                val resApkFile =
-                    it.outputFile.asFile.get()
-
-                if (resApkFile.exists()) {
-                    project.tasks.named(
-                        "make",
-                        AbstractCopyTask::class.java
-                    ) {
-                        it.from(
-                            project.zipTree(resApkFile)
-                        ) { copySpec ->
-                            copySpec.exclude(
-                                "AndroidManifest.xml"
-                            )
-                        }
-                    }
-                }
-            }
-        }
-
-    project.afterEvaluate {
-        val make =
+        val compileDex =
             project.tasks.register(
-                "make",
-                Zip::class.java
+                "compileDex",
+                CompileDexTask::class.java
             ) {
-                val compileDexTask =
-                    compileDex.get()
+                it.group = TASK_GROUP
 
-                it.dependsOn(compileDexTask)
+                it.pluginClassFile.set(pluginClassFile)
 
-                val manifestFile =
-                    intermediates.resolve("manifest.json")
+                it.minSdk.set(
+                    android.defaultConfig.minSdk
+                        ?: error(
+                            "minSdk is not configured for ${project.path}"
+                        )
+                )
 
-                it.from(manifestFile)
+                val kotlinTask =
+                    project.tasks.findByName("compileDebugKotlin")
+                            as KotlinCompile?
 
-                it.doFirst {
-                    if (extension.pluginClassName == null) {
-                        if (pluginClassFile.exists()) {
-                            extension.pluginClassName =
-                                pluginClassFile.readText()
+                if (kotlinTask != null) {
+                    it.dependsOn(kotlinTask)
+                    it.input.from(kotlinTask.destinationDirectory)
+                }
+
+                it.outputFile.set(
+                    intermediates.resolve("classes.dex")
+                )
+            }
+
+        val compileResources =
+            project.tasks.register(
+                "compileResources",
+                CompileResourcesTask::class.java
+            ) {
+                it.group = TASK_GROUP
+
+                val processManifestTask =
+                    project.tasks.getByName(
+                        "processDebugManifest"
+                    ) as ProcessLibraryManifest
+
+                it.dependsOn(processManifestTask)
+
+                it.input.set(
+                    project.file(
+                        android.sourceSets
+                            .getByName("main")
+                            .res.directories
+                            .single()
+                    )
+                )
+
+                it.manifestFile.set(
+                    processManifestTask.manifestOutputFile
+                )
+
+                it.outputFile.set(
+                    intermediates.resolve("res.apk")
+                )
+
+                it.doLast { _ ->
+                    val resApkFile =
+                        it.outputFile.asFile.get()
+
+                    if (resApkFile.exists()) {
+                        project.tasks.named(
+                            "make",
+                            AbstractCopyTask::class.java
+                        ) {
+                            it.from(
+                                project.zipTree(resApkFile)
+                            ) { copySpec ->
+                                copySpec.exclude(
+                                    "AndroidManifest.xml"
+                                )
+                            }
                         }
                     }
-
-                    manifestFile.writeText(
-                        JsonBuilder(
-                            project.makeManifest(),
-                            JsonGenerator.Options()
-                                .excludeNulls()
-                                .build()
-                        ).toString()
-                    )
-                }
-
-                it.from(
-                    compileDexTask.outputFile
-                )
-
-                val zip = it as Zip
-
-                if (extension.requiresResources) {
-                    zip.dependsOn(
-                        compileResources.get()
-                    )
-                }
-
-                zip.isPreserveFileTimestamps = false
-
-                zip.archiveBaseName.set(project.name)
-                zip.archiveExtension.set("kc")
-                zip.archiveVersion.set("")
-
-                zip.destinationDirectory.set(
-                    project.layout.buildDirectory
-                )
-
-                it.doLast { task ->
-                    extension.fileSize =
-                        task.outputs.files
-                            .singleFile
-                            .length()
-
-                    task.logger.lifecycle(
-                        "Made KomikChino package at " +
-                                task.outputs.files.singleFile
-                    )
                 }
             }
 
-        project.rootProject.tasks
-            .getByName("makePluginsJson")
-            .dependsOn(make)
-    }
+        project.afterEvaluate {
+            val make =
+                project.tasks.register(
+                    "make",
+                    Zip::class.java
+                ) {
+                    val compileDexTask =
+                        compileDex.get()
 
-    project.tasks.register(
-        "cleanCache",
-        CleanCacheTask::class.java
-    ) {
-        it.group = TASK_GROUP
+                    it.dependsOn(compileDexTask)
+
+                    val manifestFile =
+                        intermediates.resolve("manifest.json")
+
+                    it.from(manifestFile)
+
+                    it.doFirst {
+                        if (extension.pluginClassName == null) {
+                            if (pluginClassFile.exists()) {
+                                extension.pluginClassName =
+                                    pluginClassFile.readText()
+                            }
+                        }
+
+                        manifestFile.writeText(
+                            JsonBuilder(
+                                project.makeManifest(),
+                                JsonGenerator.Options()
+                                    .excludeNulls()
+                                    .build()
+                            ).toString()
+                        )
+                    }
+
+                    it.from(compileDexTask.outputFile)
+
+                    val zip = it as Zip
+
+                    if (extension.requiresResources) {
+                        zip.dependsOn(
+                            compileResources.get()
+                        )
+                    }
+
+                    zip.isPreserveFileTimestamps = false
+
+                    zip.archiveBaseName.set(project.name)
+                    zip.archiveExtension.set("kc")
+                    zip.archiveVersion.set("")
+
+                    zip.destinationDirectory.set(
+                        project.layout.buildDirectory
+                    )
+
+                    it.doLast { task ->
+                        extension.fileSize =
+                            task.outputs.files
+                                .singleFile
+                                .length()
+
+                        task.logger.lifecycle(
+                            "Made KomikChino package at " +
+                                    task.outputs.files.singleFile
+                        )
+                    }
+                }
+
+            project.rootProject.tasks
+                .getByName("makePluginsJson")
+                .dependsOn(make)
+        }
+
+        project.tasks.register(
+            "cleanCache",
+            CleanCacheTask::class.java
+        ) {
+            it.group = TASK_GROUP
+        }
     }
 }
