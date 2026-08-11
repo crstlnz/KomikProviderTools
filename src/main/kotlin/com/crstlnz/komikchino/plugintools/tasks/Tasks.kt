@@ -80,68 +80,68 @@ fun registerTasks(project: Project) {
                 )
             }
 
-        val compileResources =
-            project.tasks.register(
-                "compileResources",
-                CompileResourcesTask::class.java
-            ) {
-                it.group = TASK_GROUP
+        project.afterEvaluate {
 
-                val processManifestTask =
-                    project.tasks.getByName(
-                        "processDebugManifest"
-                    ) as ProcessLibraryManifest
+            val mainSourceSet =
+                android.sourceSets.getByName("main")
 
-                it.dependsOn(processManifestTask)
+            val processManifestTask =
+                project.tasks.getByName(
+                    "processDebugManifest"
+                ) as ProcessLibraryManifest
 
-                it.input.set(
-                    project.file(
-                        android.sourceSets
-                            .getByName("main")
-                            .res.directories
-                            .single()
+            val compileResources =
+                project.tasks.register(
+                    "compileResources",
+                    CompileResourcesTask::class.java
+                ) {
+                    it.group = TASK_GROUP
+
+                    it.dependsOn(processManifestTask)
+
+                    it.input.set(
+                        project.file(
+                            mainSourceSet.res
+                                .directories
+                                .single()
+                        )
                     )
-                )
 
-                it.manifestFile.set(
-                    processManifestTask.manifestOutputFile
-                )
+                    it.manifestFile.set(
+                        processManifestTask.manifestOutputFile
+                    )
 
-                it.outputFile.set(
-                    intermediates.resolve("res.apk")
-                )
+                    it.outputFile.set(
+                        intermediates.resolve("res.apk")
+                    )
 
-                it.doLast { _ ->
-                    val resApkFile =
-                        it.outputFile.asFile.get()
+                    it.doLast { _ ->
+                        val resApkFile =
+                            it.outputFile.asFile.get()
 
-                    if (resApkFile.exists()) {
-                        project.tasks.named(
-                            "make",
-                            AbstractCopyTask::class.java
-                        ) {
-                            it.from(
-                                project.zipTree(resApkFile)
-                            ) { copySpec ->
-                                copySpec.exclude(
-                                    "AndroidManifest.xml"
-                                )
+                        if (resApkFile.exists()) {
+                            project.tasks.named(
+                                "make",
+                                AbstractCopyTask::class.java
+                            ) {
+                                it.from(
+                                    project.zipTree(resApkFile)
+                                ) { copySpec ->
+                                    copySpec.exclude(
+                                        "AndroidManifest.xml"
+                                    )
+                                }
                             }
                         }
                     }
                 }
-            }
 
-        project.afterEvaluate {
             val make =
                 project.tasks.register(
                     "make",
                     Zip::class.java
                 ) {
-                    val compileDexTask =
-                        compileDex.get()
-
-                    it.dependsOn(compileDexTask)
+                    it.dependsOn(compileDex)
 
                     val manifestFile =
                         intermediates.resolve("manifest.json")
@@ -166,14 +166,12 @@ fun registerTasks(project: Project) {
                         )
                     }
 
-                    it.from(compileDexTask.outputFile)
+                    it.from(compileDex.get().outputFile)
 
                     val zip = it as Zip
 
                     if (extension.requiresResources) {
-                        zip.dependsOn(
-                            compileResources.get()
-                        )
+                        zip.dependsOn(compileResources)
                     }
 
                     zip.isPreserveFileTimestamps = false
