@@ -82,9 +82,6 @@ fun registerTasks(project: Project) {
 
         project.afterEvaluate {
 
-            val mainSourceSet =
-                android.sourceSets.getByName("main")
-
             val processManifestTask =
                 project.tasks.getByName(
                     "processDebugManifest"
@@ -101,9 +98,9 @@ fun registerTasks(project: Project) {
 
                     it.input.set(
                         project.file(
-                            mainSourceSet.res
-                                .directories
-                                .single()
+                            android.sourceSets.getByName("main") { k ->
+                                k.kotlin.directories
+                            }
                         )
                     )
 
